@@ -6,6 +6,7 @@ require 'rubygems'
 require 'sequel'
 require 'fastercsv'
 require 'fileutils'
+require 'yaml'
 require File.join(File.dirname(__FILE__),"csv.rb")
 
 # NOTE: This converter requires Sequel and the MySQL gems.
@@ -40,7 +41,8 @@ module Jekyll
                     permalink, \
                     body, \
                     published_at, \
-                    title \
+                    title, \
+                    filter \
              FROM contents \
              WHERE user_id = 1 AND \
                    type = 'Article' AND \
@@ -60,11 +62,12 @@ module Jekyll
         slug = post[:permalink]
         date = post[:published_at]
         content = post[:body]
+        filter = post[:filter] || 'markdown'
 
-        # Ideally, this script would determine the post format (markdown,
-        # html, etc) and create files with proper extensions. At this point
-        # it just assumes that markdown will be acceptable.
-        name = [date.year, date.month, date.day, slug].join('-') + ".markdown"
+        suffix = filter.sub('_filter', '')
+        suffix = 'markdown' if suffix == "smartypants"
+
+        name = [date.year, date.month, date.day, slug].join('-') + ".#{suffix}"
 
         data = {
            'layout' => 'post',

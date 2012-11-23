@@ -106,7 +106,7 @@ module Jekyll
     def to_liquid
       self.data.deep_merge({
         "url"        => File.join(@dir, self.url),
-        "content"    => self.content })
+        "content"    => self.content.force_encoding('utf-8') })
     end
 
     # Obtain destination path.
